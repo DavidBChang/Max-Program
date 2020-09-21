@@ -84,11 +84,6 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
     handlePickDay = (day, idx) => () => {
         let path = "day?index=" + idx;
         this.sendRequest(day, path);             // picked day out of the list; so that we can modify java data
-        /*
-        this.props.navigation.navigate('Day', {
-            day: this.state.day             // so that day screen renders correct data
-        })
-        */
     };
 
     async sendRequest(day, path) {
@@ -112,6 +107,63 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
             console.log("Error in requesting data");
         }
     }
+
+    completeProgram = () => {
+        if (this.state.name !== "" && this.state.name !== undefined) {
+            let path1 = "verify";
+            let path2 = "checkduplicateprogram?programname=" + this.state.name;
+            this.sendRequestVerification(path1, path2);
+        } else {
+            alert("You have not declared the name of this Program.")
+        }
+    };
+
+    async sendRequestVerification(path1, path2) {
+        try {
+            let responsePromise = await fetch('http://localhost:4567/' + path2); // added await
+            let response = await responsePromise;
+            if (!response.ok) {
+                alert("Error!");
+                return;
+            }
+            let parsingPromise = response.json();
+            let parsedObject = await parsingPromise;
+            let path = "completeprogram?programname=" + this.state.name;
+            if (parsedObject) {
+                if (confirm("You already have a Program called " + this.state.name + ", do you want to override it with this Program?")) {
+                } else {
+                    return;
+                }
+            }
+            this.sendRequestComplete(path);
+        } catch (e) {
+            console.log("Error in requesting data");
+        }
+    }
+
+    async sendRequestComplete(path) {
+        let parsedObject: any[] = [];
+        try {
+            let responsePromise = await fetch('http://localhost:4567/' + path); // added await
+            let response = await responsePromise;
+            if (!response.ok) {
+                alert("Error!: " + path);
+                return;
+            }
+            let parsingPromise = response.json();
+            parsedObject = await parsingPromise;
+            console.log(parsedObject);
+            this.navigateToHome(parsedObject);
+        } catch (e) {
+            console.log("Error in requesting data");
+        }
+    }
+
+    navigateToHome = (parsedObject) => {
+        this.props.navigation.navigate('Home', {
+            home: parsedObject
+        })
+    };
 
     navigateToDay = (dayName, parsedObject) => {
         this.props.navigation.navigate('Day', {
@@ -214,7 +266,7 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
                     Add Max Lift
                 </button>
 
-                <h4>Days</h4>
+                <h4>Days in Each Training Cycle</h4>
                 <button // [] as param
                     type="button"
                     onClick={() => this.props.navigation.navigate('Day', {
@@ -236,153 +288,14 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
                         </button>
                     </View>
                 ))}
-
+                <Button
+                    title="Complete this Program"
+                    onPress={this.completeProgram}
+                />
             </form>
         );
-        /*
-        // do alert if name already exists - need function for this
-        // the if statement below will turn into else if
-        if (navigation.getParam('name') !== '') {
-            return (
-                <View>
-                    <Text>{navigation.getParam('name')}</Text>
-                    <Button title='Add New Day' onPress={() => this.props.navigation.navigate('Day')}/>
-                </View>
-            )
-            //
-            return (
-                <View>
-                    <View style={styles.row}>
-                        <View style={{margin: 10}}>
-                            <Button title='Add' onPress={() => this.addTextInput(this.state.textInput.length)}/>
-                        </View>
-                        <View style={{margin: 10}}>
-                            <Button title='Remove' onPress={() => this.removeTextInput()}/>
-                        </View>
-                    </View>
-                    {this.state.textInput.map((value) => {
-                        return value
-                    })}
-                    <Button title='Add New Day' onPress={() => this.props.navigation.navigate('Day')}/>
-                    <Button
-                        title="Complete this Program"
-                        onPress={() => this.props.navigation.navigate('Home', {
-                            input: this.state.inputData
-                        })}
-                    />
-                </View>
-            )
-
-        }*/
     }
 }
-
-// class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
-//
-//     constructor(props){
-//         super(props);
-//         this.state = {
-//             name: '',
-//             textInput : [],
-//             inputData : [],
-//             day: []
-//         }
-//     }
-//
-//     // (name, set, rep, ...)
-//     // function to show the day lifts, called by a button (the button title will be the param name)
-//     // it will set state at the end of the function where the state will be the completed fill-ins
-//     // of all the days. Same body as addTextInput but with buttons (will the push part work?).
-//     // Buttons will call function taking in the same parameters and will show completed fill-ins of that day.
-//     // Editing a day will require accessing the day name as a key
-//
-//     //function to add TextInput dynamically
-//     addTextInput = (index) => {
-//         let textInput = this.state.textInput;
-//         textInput.push(<TextInput style={styles.textInput}
-//                                   onChangeText={(text) => this.addValues(text, index)} />);
-//         this.setState({ textInput });
-//     };
-//
-//     //function to remove TextInput dynamically
-//     removeTextInput = () => {
-//         let textInput = this.state.textInput;
-//         let inputData = this.state.inputData;
-//         textInput.pop();
-//         inputData.pop();
-//         this.setState({ textInput,inputData });
-//     };
-//
-//     //function to add text from TextInputs into single array
-//     addValues = (text, index) => {
-//         let dataArray = this.state.inputData;
-//         let checkBool = false;
-//         if (dataArray.length !== 0){
-//             dataArray.forEach(element => {
-//                 if (element.index === index ){
-//                     element.text = text;
-//                     checkBool = true;
-//                 }
-//             });
-//         }
-//         if (checkBool){
-//             this.setState({
-//                 inputData: dataArray
-//             });
-//         }
-//         else {
-//             dataArray.push({'text':text,'index':index});
-//             this.setState({
-//                 inputData: dataArray
-//             });
-//         }
-//     };
-//
-//     //function to console the output
-//     getValues = () => {
-//         console.log('Data',this.state.inputData);
-//     };
-//
-//
-//     render(){
-//         const { navigation } = this.props;
-//         console.log(navigation.getParam('name'));
-//         // do alert if name already exists - need function for this
-//         // the if statement below will turn into else if
-//         if (navigation.getParam('name') !== '') {
-//             return (
-//                 <View>
-//                     <Text>{navigation.getParam('name')}</Text>
-//                     <Button title='Add New Day' onPress={() => this.props.navigation.navigate('Day')}/>
-//                 </View>
-//             )
-//             //
-//             return (
-//                 <View>
-//                     <View style={styles.row}>
-//                         <View style={{margin: 10}}>
-//                             <Button title='Add' onPress={() => this.addTextInput(this.state.textInput.length)}/>
-//                         </View>
-//                         <View style={{margin: 10}}>
-//                             <Button title='Remove' onPress={() => this.removeTextInput()}/>
-//                         </View>
-//                     </View>
-//                     {this.state.textInput.map((value) => {
-//                         return value
-//                     })}
-//                     <Button title='Add New Day' onPress={() => this.props.navigation.navigate('Day')}/>
-//                     <Button
-//                         title="Complete this Program"
-//                         onPress={() => this.props.navigation.navigate('Home', {
-//                             input: this.state.inputData
-//                         })}
-//                     />
-//                 </View>
-//             )
-//
-//         }
-//     }
-// }
 
 const styles = StyleSheet.create({
     container: {

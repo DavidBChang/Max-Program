@@ -1,15 +1,27 @@
 import org.javatuples.Triplet;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Maxes {
     private List<Triplet<String, Integer, Integer>> maxes;
+    private Set<String> maxesNames;
 
     public Maxes() {
         maxes = new ArrayList<>();
         maxes.add(new Triplet<>("Squat", 0, 0));
         maxes.add(new Triplet<>("Bench", 0, 0));
         maxes.add(new Triplet<>("Deadlift", 0, 0));
+        maxesNames = new HashSet<>();
+    }
+
+    public List<Triplet<String, Integer, Integer>> getMaxes() {
+        return maxes;
+    }
+
+    public Set<String> getMaxesNames() {
+        return maxesNames;
     }
 
     public void addMax() {
@@ -33,5 +45,9 @@ public class Maxes {
 
     public void removeMax(int index) {
         maxes.remove(index);
+    }
+
+    public String toString() {
+        return maxes.toString();
     }
 }

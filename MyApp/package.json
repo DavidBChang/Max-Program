@@ -23,6 +23,8 @@
     "react-navigation": "^4.3.9",
     "react-navigation-stack": "^2.7.0",
     "react-slider": "^1.0.9",
+    "react-table": "^7.5.0",
+    "styled-components": "^5.2.0",
     "typescript": "^3.7.5"
   },
   "devDependencies": {

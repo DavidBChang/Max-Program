@@ -86,6 +86,7 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
         this.setState({
             lifts: this.state.lifts.concat([{ name: "" }])
         });
+        console.log("adding lift");
         let path = "addname";
         this.sendRequestAddName(path);
     };
@@ -221,10 +222,25 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
     async sendRequestComplete(path) {
         let parsedObject: any[] = [];
         try {
+
+            let path1 = "test?dayname=" + this.state.name;
+            let rPromise = await fetch('http://localhost:4567/' + path1); // added await
+            let r = await rPromise;
+            if (!r.ok) {
+                alert("Error!");
+                return;
+            }
+            let pPromise = r.json();
+            parsedObject = await pPromise;
+            console.log("what day should look like: " + JSON.stringify(parsedObject));
+
+
+
+
             let responsePromise = await fetch('http://localhost:4567/' + path); // added await
             let response = await responsePromise;
             if (!response.ok) {
-                alert("Error!");
+                alert("Error!: " + path);
                 return;
             }
             let parsingPromise = response.json();
@@ -244,13 +260,14 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
 
     navigateToProgram = (parsedObject) => {
         this.props.navigation.navigate('Program', {
-            item: {"David": "chang"},
+            //item: {"David": "chang"},
             program: parsedObject
         })
     };
 
     handleRemoveDay = () => {
-
+        let path = "removeday?dayname=" + this.state.name;
+        this.sendRequestComplete(path);
     };
 
     render() {
@@ -340,410 +357,16 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
                     title="Complete this Day"
                     onPress={this.completeDay}
                 />
-            </form>
-        );
-    }
-}
-
-export default DayScreen;
-
-/*
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: "",
-            lifts: [{ name: "" }],
-            setsReps: [{ name: "NAME", scheme: [{sets: "SETS1", reps: "REPS"}, {sets: "SETS2", reps: "REPS"}]}]   // there will already be a sets reps box before clicking add
-        };
-    }*/
-/*
-    handleLiftNameChange = idx => evt => {
-
-        const newLift = this.state.setsReps.map((lift, sidx) => {
-            if (idx !== sidx) return lift;
-            return { ...lift, name: evt.target.value };
-        });
-        console.log(evt.target.value);
-        this.setState({ setsReps: newLift });
-        console.log("setsReps after name change: " + this.state.setsReps[idx].name);
-    };
-
-    handleSetsRepsNameChange = (nameIdx: number, idx: number) => evt => {
-
-        const newSetsReps = this.state.setsReps[nameIdx].scheme.map((scheme, sidx) => {
-            if (idx != sidx) {
-                return scheme.sets; // ?
-            }
-            return { ...scheme, sets: evt.target.value };
-        });
-        console.log("setsreps: " + evt.target.value);
-        this.setState({
-            setsReps: [...this.state.setsReps[nameIdx].scheme, newSetsReps]
-        });
-        //
-        console.log("setsreps: " + evt.target.value);
-        this.setState( () => ({
-            setsReps: {
-                ...this.state.setsReps[nameIdx],
-                scheme: {
-                    ...this.state.setsReps[nameIdx].scheme[idx],
-                    sets: evt.target.value
-                }
-            }
-        }));
-    };
-
-    handleSubmit = evt => {
-        const { name, lifts } = this.state;
-        alert(`Incorporated: ${name} with ${lifts.length} shareholders`);
-    };
-
-    handleAddLift = () => {
-        this.setState({
-            setsReps: this.state.setsReps.concat([{ name: "", scheme: [{sets: "", reps: "REPS"}]}])
-        })
-        //
-        this.setState({
-            lifts: this.state.lifts.concat([{ name: "" }])
-        });
-    };
-
-    handleAddSetsReps = (nameIndex: number) => {
-
-        let i: number;
-        for (i = 0; i < this.state.setsReps.length; i++) {
-            if (this.state.setsReps[i].name === liftName) {
-                this.setState({
-                    setsReps: this.state.setsReps[i].scheme.concat([{sets: "", reps: "REPS"}])
-                });
-            }
-        }
-        console.log("scheme");
-        const newSetsReps = this.state.setsReps[nameIndex].scheme.concat([{sets: "", reps: "REPS"}]);
-
-        this.setState({
-            setsReps: [...this.state.setsReps[nameIndex].scheme, newSetsReps]
-        });
-        console.log("scheme: " + this.state.setsReps[nameIndex].scheme);
-
-
-
-        console.log("in handleaddsetsreps: " + this.state.setsReps[liftName]);
-        if (this.state.setsReps[liftName] === undefined) {
-            const elementsIndex = this.state.setsReps.findIndex(element => element.liftName === liftName );
-            let newSetReps = [...this.state.setsReps];
-            newSetReps[liftName] = {...newSetReps[liftName], sets: ""}
-            // need this set state outside the if block?
-            this.setState({
-                setsReps: newSetReps
-            })
-
-
-            let newSetName = this.state.setsReps.concat([{liftName: [{sets: ""}]}]);
-            console.log("in");
-            console.log(newSetName);
-            this.setState({
-                setsReps: newSetName //this.state.setsReps.concat([{liftName: [{sets: ""}]}])
-            }, () => {
-                console.log(this.state.setsReps); //prints length of 5
-            });
-            console.log("still in, state is: " + this.state.setsReps);
-
-        }
-
-        console.log(this.state.setsReps[liftName]);
-        this.setState({
-            setsReps: this.state.setsReps[liftName].concat([{sets: ""}])
-        });
-
-
-
-    };
-
-    handleRemoveLift = idx => () => {
-        this.setState({
-            setsReps: this.state.setsReps.filter((s, sidx) => idx !== sidx)
-        });
-    };
-
-    handleRemoveSetsReps = (name, idx) => () => {
-        this.setState({
-            setsReps: this.state.setsReps.filter((s, sidx) => idx !== sidx)
-        });
-    };
-
-    render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Name of Day"
-                    value={this.state.name}
-                    onChange={this.handleNameChange}
-                />
-
-                <h4>Lifts</h4>
-
-                {this.state.setsReps.map((lift, nameIndex) => (    // {this.state.lifts.map((lift, nameIndex) => (
-                    <View>
-                        <input
-                            type="text"
-                            placeholder={`Lift #${nameIndex + 1} name`}
-                            value={lift.name}
-                            onChange={this.handleLiftNameChange(nameIndex)}
-                        />
-                        <button
-                            type="button"
-                            onClick={this.handleRemoveLift(nameIndex)}
-                            className="small"
-                        >
-                            -
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => this.handleAddSetsReps(nameIndex)}   //used to be lift.name
-                            className="small"
-                        >
-                            Add Sets and Reps
-                        </button>
-
-                        {this.state.setsReps[nameIndex].name !== "" ?
-                            this.state.setsReps[nameIndex].scheme.map((set, setIndex) => (
-                                <View>
-                                    <input
-                                        type="text"
-                                        placeholder={`Set #${setIndex + 1} name`}
-                                        value={set.sets}
-                                        onChange={this.handleSetsRepsNameChange(nameIndex, setIndex)}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => this.handleRemoveSetsReps(lift.name, setIndex)}
-                                        className="small"
-                                    >
-                                        -
-                                    </button>
-                                </View>
-                            ))
-                            : null
-                        }
-                        <button
-                            type="button"
-                            onClick={() => this.handleAddSetsReps(nameIndex)}   //used to be lift.name
-                            className="small"
-                        >
-                            Add Sets and Reps
-                        </button>
-
-                    </View>
-                ))}
                 <button
                     type="button"
-                    onClick={this.handleAddLift}
+                    onClick={this.handleRemoveDay}
                     className="small"
                 >
-                    Add Lift
+                    Remove this Day
                 </button>
-                <button>Incorporate</button>
             </form>
         );
     }
 }
 
-// const rootElement = document.getElementById("root");
-// ReactDOM.render(<IncorporationForm />, rootElement);
-
 export default DayScreen;
-
-
-
-//
-// interface DayScreenState {
-//     name: string;
-//     textInput: any[];
-//     inputData: any[];
-//     setsRepsInput: any[][];
-//     setsRepsData: {[key:string]:string[];};
-// }
-//
-// interface DayScreenProps {
-//     navigation: any
-// }
-//
-// class DayScreen extends Component<DayScreenProps, DayScreenState> {
-//
-//     constructor(props){
-//         super(props);
-//         this.state = {
-//             name: "",
-//             textInput : [[]],         // should this be a double array?
-//             inputData : [],
-//             setsRepsInput: [[]],
-//             setsRepsData: {}
-//         }
-//     }
-//
-//     // function to add sets, reps
-//     addSetsReps = (nameIndex, valuesIndex) => {
-//         let textInput = this.state.setsRepsInput;   // ?              //this.state.setsRepsInput;
-//         textInput[nameIndex] = [];
-//         textInput[nameIndex].push(<TextInput style={styles.textInput}
-//                                   onChangeText={(text) => this.addValsSetsReps(text, nameIndex)} />);
-//         this.setState({
-//             setsRepsInput: textInput
-//         });
-//         console.log(this.state.setsRepsInput);
-//     };
-//
-//     // add values of sets and reps
-//     addValsSetsReps = (text, nameIndex) => {
-//         let textInput = this.state.setsRepsData;
-//         let dataArray = this.state.inputData;
-//         let liftName = '';
-//         if (dataArray.length !== 0){
-//             dataArray.forEach(element => {
-//                 // inputData must contain the nameIndex index, so liftName won't be empty
-//                 if (element.index === nameIndex ){
-//                     liftName = element.text;
-//                 }
-//             });
-//
-//             if (textInput.hasOwnProperty(liftName)) { //textInput.some(item => item.hasOwnProperty(liftName))) {
-//                 textInput[liftName].push(text)
-//             } else {
-//                 let newArr: any[] = [text];
-//                 textInput[liftName] = newArr;
-//             }
-//
-//             this.setState( {
-//                 setsRepsData: textInput
-//             })
-//         }
-//     };
-//
-//     //function to add TextInput dynamically
-//     addTextInput = (index) => {
-//         let textInput = this.state.textInput;
-//         /*
-//         textInput.push(
-//             <TextInput style={styles.textInput}
-//                        onChangeText={(text) => this.addValues(text, index)} />);
-//
-//          */
-//         textInput.push(
-//             <View>
-//                 <TextInput style={styles.textInput}
-//                            onChangeText={(text) => this.addValues(text, index)} />
-//             </View>);
-//
-//         this.setState({ textInput });
-//         console.log('outer element: ' + this.state.textInput);
-//         textInput.push(             // we already pushed here
-//             <View>
-//                 <Button title='Add' onPress={() => this.addSetsReps(index, this.state.setsRepsInput.length)} />
-//             </View>);
-//     };
-//
-//     //function to remove TextInput dynamically
-//     removeTextInput = () => {
-//         let textInput = this.state.textInput;
-//         let inputData = this.state.inputData;
-//         textInput.pop();
-//         inputData.pop();
-//         this.setState({ textInput,inputData });
-//     };
-//
-//     //function to add text from TextInputs into single array
-//     addValues = (text, index) => {
-//         let dataArray = this.state.inputData;
-//         let checkBool = false;
-//         if (dataArray.length !== 0){
-//             dataArray.forEach(element => {
-//                 if (element.index === index ){
-//                     element.text = text;
-//                     checkBool = true;
-//                 }
-//             });
-//         }
-//         if (checkBool){
-//             this.setState({
-//                 inputData: dataArray
-//             });
-//         }
-//         else {
-//             dataArray.push({'text':text,'index':index});
-//             this.setState({
-//                 inputData: dataArray
-//             });
-//         }
-//     };
-//
-//     //function to console the output
-//     getValues = () => {
-//         console.log('Data',this.state.inputData);
-//     };
-//
-//
-//     render(){
-//         return(
-//             <View>
-//                 <View style= {styles.row}>
-//                     <View style={{margin: 10}}>
-//                         <Button title='Add' onPress={() => this.addTextInput(this.state.textInput.length)} />
-//                     </View>
-//                     <View style={{margin: 10}}>
-//                         <Button title='Remove' onPress={() => this.removeTextInput()} />
-//                     </View>
-//                 </View>
-//                 <TextInput
-//                     placeholder='Name of this Day'
-//                     onChangeText={(text) => {
-//                         this.setState({
-//                             name: text
-//                         })
-//                     }}/>
-//                 {this.state.textInput.map((value) => {
-//                     return value
-//                 })}
-//                 <Button title='Get Values' onPress={() => this.getValues()} />
-//                 {this.state.name !== '' ?
-//                     <Button
-//                         title="Complete this Day"
-//                         onPress={() => this.props.navigation.navigate('Program', {
-//                             name: this.state.name,
-//                             input: this.state.inputData
-//                         })}
-//                     />
-//                     : null
-//                 }
-//             </View>
-//         )
-//     }
-// }
-//
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         backgroundColor: 'white',
-//     },
-//     buttonView: {
-//         flexDirection: 'row'
-//     },
-//     textInput: {
-//         height: 40,
-//         borderColor: 'black',
-//         borderWidth: 1,
-//         margin: 20
-//     },
-//     row:{
-//         flexDirection: 'row',
-//         justifyContent: 'center'
-//     },
-// });
-//
-// export default DayScreen;
-
-
-

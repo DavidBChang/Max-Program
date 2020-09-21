@@ -9,6 +9,22 @@ public class Day {
         this.day = new ArrayList<>();
     }
 
+    public Day(List<Pair<String, List<Volume>>> day) {
+        this.day = day;
+    }
+
+    public List<Pair<String, List<Volume>>> getDay() {
+        return day;
+    }
+
+    public String getLiftName(int index) {
+        return day.get(index).getValue0();
+    }
+
+    public List<Volume> getSetsReps(int index) {
+        return day.get(index).getValue1();
+    }
+
     public void addName() {
         Pair<String, List<Volume>> newLift = new Pair<>("", new ArrayList<>());
         day.add(newLift);
@@ -25,6 +41,10 @@ public class Day {
 
     public void addSetsReps(int index) {
         day.get(index).getValue1().add(new Volume());
+    }
+
+    public void addSetsReps(int index, Volume volume) {
+        day.get(index).getValue1().add(volume);
     }
 
     public void removeSetsReps(int nameIdx, int setsRepsIdx) {
@@ -70,5 +90,31 @@ public class Day {
 
     public void completeDay() {
         day = new ArrayList<>();
+    }
+
+    public Day makeCopy() {
+        Day dayCopy = new Day();
+        for (int i = 0; i < day.size(); i++) {
+            dayCopy.addName();
+            String liftName = getLiftName(i);
+            dayCopy.changeName(liftName, i);
+            List<Volume> setsReps = getSetsReps(i);
+            if (!setsReps.isEmpty()) {
+                for (int j = 0; j < setsReps.size(); j++) {
+                    //dayCopy.addSetsReps(i);
+                    Integer sets = setsReps.get(j).getSets();
+                    Integer reps = setsReps.get(j).getReps();
+                    Double rpe = setsReps.get(j).getRpe();
+                    Integer percent = setsReps.get(j).getPercentage();
+                    Volume volume = new Volume(sets, reps, rpe, percent);
+                    dayCopy.addSetsReps(i, volume);
+                }
+            }
+        }
+        return dayCopy;
+    }
+
+    public String toString() {
+        return day.toString();
     }
 }

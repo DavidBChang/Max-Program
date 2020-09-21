@@ -5,16 +5,29 @@ import java.util.List;
 import java.util.Map;
 
 public class Program {
-    private List<Pair<String, Day>> program;
-    private Map<String, Integer> programNames;
+    private List<Pair<String, List<Pair<String, List<Volume>>>>> program;
+    private Map<String, Integer> dayNames;
 
     public Program() {
         program = new ArrayList<>();
-        programNames = new HashMap<>();
+        dayNames = new HashMap<>();
+    }
+
+    public Program(List<Pair<String, List<Pair<String, List<Volume>>>>> program, Map<String, Integer> dayNames) {
+        this.program = program;
+        this.dayNames = dayNames;
+    }
+
+    public Program getProgram() {
+        return new Program(program, dayNames);
+    }
+
+    public List<Pair<String, List<Pair<String, List<Volume>>>>> getDays() {
+        return program;
     }
 
     public boolean checkDuplicate(String dayName) {
-        return programNames.containsKey(dayName);
+        return dayNames.containsKey(dayName);
         /*
         boolean completed = false;
 
@@ -27,16 +40,17 @@ public class Program {
         return completed;*/
     }
 
-    public void completeDay(String dayName, boolean override, Day day) {
+    public void completeDay(String dayName, List<Pair<String, List<Volume>>> day) {
         if (checkDuplicate(dayName)) {
-            int i = programNames.get(dayName);
+            int i = dayNames.get(dayName);
             program.set(i, program.get(i).setAt1(day));
         } else {
-            Pair<String, Day> newDay = new Pair<>(dayName, day);
+            Pair<String, List<Pair<String, List<Volume>>>> newDay = new Pair<>(dayName, day);
             program.add(newDay);
-            programNames.put(dayName, programNames.size());
+            dayNames.put(dayName, dayNames.size());
         }
-        day.completeDay();
+        //day.completeDay();
+        //return program;
         /*
         if (override) {
             for (int i = 0; i < program.size(); i++) {
@@ -53,13 +67,22 @@ public class Program {
         day.completeDay();*/
     }
 
-    public void chooseDay(int index, Day day) {
-        day = program.get(index).getValue1();
+    public void completeProgram() {
+        program = new ArrayList<>();
+    }
+
+    public Day chooseDay(int index) {
+        List<Pair<String, List<Volume>>> day = program.get(index).getValue1();
+        //day = program.get(index).getValue1();
+        return new Day(day);
     }
 
     public void removeDay(String dayName) {
-        int index = programNames.get(dayName);
+        int index = dayNames.get(dayName);
         program.remove(index);
-        System.out.println();
+    }
+
+    public String toString() {
+        return program.toString();
     }
 }
