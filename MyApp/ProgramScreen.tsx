@@ -202,12 +202,10 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
     }
 
     render() {
-        console.log(JSON.stringify(this.state.maxes));
         const { navigation } = this.props;
-        console.log(JSON.stringify(this.state.program));
-        console.log(JSON.stringify(navigation.getParam('program')));
         return (
             <form>
+                <h4>Name of the Program: </h4>
                 <input
                     type="text"
                     placeholder="Name of the Program"
@@ -217,32 +215,33 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
 
                 <h4>Current Stats</h4>
 
-                <button
-                    type="button"
-                    onClick={() => {
-                        navigation.navigate('Calculator')
-                    }}
-                    className="small"
-                >
-                    Calculate 1 Rep Max
-                </button>
+                <View style={styles.fixToText}>
+                    <Button
+                        title="Calculate 1 Rep Max"
+                        onPress={() => {
+                            navigation.navigate('Calculator')
+                        }}
+                    />
+                </View>
 
                 {this.state.maxes.map((lift, index) => (
-                    <View>
+                    <View style={styles.list}>
                         <TextInput
                             placeholder={`Enter Lift`}
                             value={lift.val0}
                             onFocus={this.handleFocus}
                             onChange={this.handleMaxNameChange(index)}
                         />
-                        <TextInput
+                        <Text>Current 1RM: </Text>
+                        <TextInput style={styles.input}
                             placeholder={`Current 1RM`}
                             value={lift.val1}
                             keyboardType='numeric'
                             onFocus={this.handleFocus}
                             onChange={this.handleMaxRMChange(index)}
                         />
-                        <TextInput
+                        <Text>Increase every cycle by...</Text>
+                        <TextInput style={styles.input}
                             placeholder={`Increase every cycle by...`}
                             value={lift.val2}
                             keyboardType='numeric'
@@ -252,7 +251,7 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
                         <button
                             type="button"
                             onClick={this.handleMaxRemove(index)}
-                            className="small"
+                            className="delete"
                         >
                             Delete Max
                         </button>
@@ -261,19 +260,20 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
                 <button
                     type="button"
                     onClick={this.handleAddMax}
-                    className="small"
+                    className="add"
                 >
                     Add Max Lift
                 </button>
 
                 <h4>Days in Each Training Cycle</h4>
-                <button // [] as param
+
+                <button
                     type="button"
                     onClick={() => this.props.navigation.navigate('Day', {
                         day: [],
                         visit: false
                     })}
-                    className="small"
+                    className="add"
                 >
                     Add Day
                 </button>
@@ -282,16 +282,18 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
                         <button
                             type="button"
                             onClick={this.handlePickDay(day.val0, idx)}
-                            className="small"
+                            className="add"
                         >
                             {day.val0}
                         </button>
                     </View>
                 ))}
-                <Button
-                    title="Complete this Program"
-                    onPress={this.completeProgram}
-                />
+                <View style={styles.footer}>
+                    <Button
+                        title="Complete this Program"
+                        onPress={this.completeProgram}
+                    />
+                </View>
             </form>
         );
     }
@@ -303,6 +305,29 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'white',
+    },
+    list: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    fixToText: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    input: {
+        width: 100,
+    },
+    footer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10
+    },
+    headerText: {
+        fontWeight: 'bold',
+        fontSize: 12,
     },
     buttonView: {
         flexDirection: 'row'

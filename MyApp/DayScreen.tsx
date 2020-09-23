@@ -8,7 +8,7 @@ import ReactSlider from 'react-slider'
 
 import ReactDOM from "react-dom";
 
-//import "./style.css";
+import "./DayScreenStyle.css";
 
 interface DayScreenState {
     name: string;
@@ -142,29 +142,16 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
     };
 
     completeDay = () => {
-        //let path = "complete?dayname=" + this.state.name;
         if (this.state.name !== "" && this.state.name !== undefined) {
             let path1 = "verify";
             let path2 = "checkduplicate?dayname=" + this.state.name;
-            //console.log(this.sendRequestVerification(path1, path2));
             this.sendRequestVerification(path1, path2);
-            /*
-            if (this.sendRequestVerification(path1, path2)) {
-                console.log("override is true");
-                path += "&override=true";
-                this.sendRequestComplete(path);
-            } else if (!this.sendRequestVerification(path1, path2)) {   // is this for undefined returns or just false returns?
-                console.log("override is false");
-                path += "override=false";
-                this.sendRequestComplete(path);
-            }*/
         } else {
             alert("You have not declared the name of this day.")
         }
     };
 
     async sendRequestVerification(path1, path2) {
-        //let parsedObject: any[] = [];
         try {
             let responsePromise = await fetch('http://localhost:4567/' + path1); // added await
             let response = await responsePromise;
@@ -203,17 +190,14 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
                 if (parsedObject) {
                     if (confirm("You already have a day called " + this.state.name + ", do you want to override it with this day?")) {
                         path += "&override=true";
-                        //return true;    // sendrequestcomplete override with this day
                     } else {
                         return;
-                        //return undefined;   // don't override and don't complete the day
                     }
                 } else {
                     path += "&override=false";
                 }
             }
             this.sendRequestComplete(path);
-            //return false;   // day's name does not already exist
         } catch (e) {
             console.log("Error in requesting data");
         }
@@ -260,7 +244,6 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
 
     navigateToProgram = (parsedObject) => {
         this.props.navigation.navigate('Program', {
-            //item: {"David": "chang"},
             program: parsedObject
         })
     };
@@ -269,64 +252,78 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
         let path = "removeday?dayname=" + this.state.name;
         this.sendRequestComplete(path);
     };
+    /*
+    handleText = (text) => {
+        return (
+            <View>
+                <Text>text</Text>
+            </View>
+        )
+    };*/
 
     render() {
-        //const { navigation } = this.props;
-        console.log("prop " + JSON.stringify(this.state.setsReps));
         return (
             <form>
                 <input
+                    style={{justifyContent: 'center'}}
                     type="text"
                     placeholder="Name of Day"
                     value={this.state.name}
                     onChange={this.handleNameChange}
                 />
-
-                <h4>Lifts</h4>
+                <h1 style={{textAlign: 'center'}}>Lifts</h1>
 
                 {this.state.setsReps.map((lift, nameIndex) => (
                     <View>
-                        <input
-                            type="text"
-                            placeholder={`Lift #${nameIndex + 1} name`}
-                            value={lift.val0}
-                            onChange={this.handleLiftNameChange(nameIndex)}
-                        />
-                        <button
-                            type="button"
-                            onClick={this.handleRemoveLift(nameIndex)}
-                            className="small"
-                        >
-                            Delete Lift
-                        </button>
-                        <button
-                            type="button"
-                            onClick={this.handleAddSetsReps(nameIndex)}
-                            className="small"
-                        >
-                            Add Sets and Reps
-                        </button>
+                        <View style={styles.liftList}>
+                            <input
+                                type="text"
+                                placeholder={`Lift #${nameIndex + 1} name`}
+                                value={lift.val0}
+                                onChange={this.handleLiftNameChange(nameIndex)}
+                            />
+                            <button
+                                type="button"
+                                onClick={this.handleRemoveLift(nameIndex)}
+                                className="delete"
+                            >
+                                Delete Lift
+                            </button>
+                        </View>
+                        <View style={styles.fixToText}>
+                            <button
+                                type="button"
+                                onClick={this.handleAddSetsReps(nameIndex)}
+                                className="add"
+                            >
+                                Add Sets and Reps
+                            </button>
+                        </View>
                         {lift.val1.map((sr, srIndex) => ( // {lift.val1.map
-                            <View>
-                                <TextInput
+                            <View style={styles.list}>
+                                <small>(</small>
+                                <TextInput style={styles.input}
                                     placeholder={`# of sets`}
                                     value={sr.sets}
                                     keyboardType='numeric'
                                     onFocus={this.handleFocus}
                                     onChange={this.handleSetsChange(nameIndex, srIndex)}
                                 />
-                                <TextInput
+                                <small>Sets) X (</small>
+                                <TextInput style={styles.input}
                                     placeholder={`# of reps`}
                                     value={sr.reps}
                                     keyboardType='numeric'
                                     onFocus={this.handleFocus}
                                     onChange={this.handleRepsChange(nameIndex, srIndex)}
                                 />
+                                <small>Reps) @ RPE </small>
                                 <select value={sr.rpe} onChange={this.handleRpeChange(nameIndex, srIndex)}>
                                     <option value="">Select RPE ...</option>
                                     {this.createDropDown()}
                                 </select>
-                                <TextInput
+                                <small> @ </small>
+                                <TextInput style={styles.input}
                                     placeholder={`Percent of 1RM`}
                                     value={sr.percentage}
                                     keyboardType='numeric'
@@ -334,39 +331,74 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
                                     onFocus={this.handleFocus}
                                     onChange={this.handlePercentChange(lift, nameIndex, srIndex)}
                                 />
+                                <small>% of 1RM </small>
                                 <button
                                     type="button"
                                     onClick={this.handleRemoveSetsReps(nameIndex, srIndex)}
-                                    className="small"
+                                    className="delete"
                                 >
                                     Delete Sets and Reps
                                 </button>
-
                             </View>
                         ))}
                     </View>
                 ))}
-                <button
-                    type="button"
-                    onClick={this.handleAddLift}
-                    className="small"
-                >
-                    Add Lift
-                </button>
-                <Button
-                    title="Complete this Day"
-                    onPress={this.completeDay}
-                />
-                <button
-                    type="button"
-                    onClick={this.handleRemoveDay}
-                    className="small"
-                >
-                    Remove this Day
-                </button>
+                <View style={styles.fixToText}>
+                    <Button
+                        title="Add Lift"
+                        onPress={this.handleAddLift}
+                    />
+                </View>
+                <View style={styles.footer}>
+                    <Button
+                        title="Complete this Day"
+                        onPress={this.completeDay}
+                    />
+                    <Button
+                        color="#FF0000"
+                        title="Remove this Day"
+                        onPress={this.handleRemoveDay}
+                    />
+                </View>
             </form>
         );
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        marginTop: 50,
+    },
+    liftList: {
+        borderTopColor: 'grey',
+        borderTopWidth: 2,
+        flexDirection: 'row',
+        marginLeft: 5,
+        marginRight: 5,
+        padding: 25,
+    },
+    list: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    fixToText: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    input: {
+        width: 50,
+    },
+    footer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10
+    },
+    red: {
+        color: 'red',
+    },
+});
 
 export default DayScreen;

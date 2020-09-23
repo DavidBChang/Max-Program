@@ -6,7 +6,6 @@ import { NavigationScreenProp } from "react-navigation";
 import {View, TextInput, Button, StyleSheet, Text} from 'react-native';
 import {parse} from "@typescript-eslint/parser";
 import ProgramScreen from "./ProgramScreen";
-//import Data from "./Table";
 
 interface workoutProps {
     navigation: any;
@@ -39,7 +38,7 @@ class WorkoutScreen extends Component<workoutProps, workoutState> {
         )
     };
 
-    handleSetsReps = (lift) => {    // lift.val1 from handleLifts
+    handleSetsReps = (lift) => {
         return (
             <View>
                 {lift.val1.map((setsReps, idx) => (
@@ -57,13 +56,11 @@ class WorkoutScreen extends Component<workoutProps, workoutState> {
         for (let i = 0; i < numSets.length; i++) {
             numSets[i] = 1;
         }
-        console.log(numSets);
         return (
-            <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{flexDirection: 'row'}}>
                 {numSets.map((set, idx) => (
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                        <TextInput style={{ height: 20, borderColor: 'gray', borderWidth: 1 }}
-                            placeholder={`Increase every cycle by...`}
+                    <View style={{flexDirection: 'row'}}>
+                        <TextInput style={{ height: 20, width: 60, borderColor: 'gray', borderWidth: 1 }}
                             value={reps}
                             keyboardType='numeric'
                             onFocus={this.handleFocus}

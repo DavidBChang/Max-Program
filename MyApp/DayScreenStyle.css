@@ -1,0 +1,19 @@
+form button.add {
+    display: inline-block;
+    width: auto;
+    padding: 0 20px;
+    background-color: #00FF00;
+    font-size: 14px;
+}
+
+form button.delete {
+    display: inline-block;
+    width: auto;
+    padding: 0 20px;
+    background-color: #FF0000;
+    font-size: 14px;
+}
+
+form button.small:hover {
+    background-color: #999;
+}
