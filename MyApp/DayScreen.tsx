@@ -39,6 +39,22 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
         };
     }
 
+    static navigationOptions = ({ navigation, navigationOptions }) => {
+        const { params } = navigation.state;
+        return {
+            title: params ? params.otherParam : 'A Nested Details Screen',
+            headerStyle: {
+                backgroundColor: "#116466",
+
+                alignItems: "center"
+            },
+            headerTintColor: "#FFCB9A",
+            cardStyle: {
+                backgroundColor: "#2C3531",
+            }
+        };
+    };
+
     handleNameChange = evt => {
         this.setState({ name: evt.target.value });
     };
@@ -206,21 +222,6 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
     async sendRequestComplete(path) {
         let parsedObject: any[] = [];
         try {
-
-            let path1 = "test?dayname=" + this.state.name;
-            let rPromise = await fetch('http://localhost:4567/' + path1); // added await
-            let r = await rPromise;
-            if (!r.ok) {
-                alert("Error!");
-                return;
-            }
-            let pPromise = r.json();
-            parsedObject = await pPromise;
-            console.log("what day should look like: " + JSON.stringify(parsedObject));
-
-
-
-
             let responsePromise = await fetch('http://localhost:4567/' + path); // added await
             let response = await responsePromise;
             if (!response.ok) {
@@ -235,7 +236,6 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
             }, () => {
                 console.log("callback: " + JSON.stringify(this.state.days));
             });
-            // call another method that uses parsedObject or days and use that method to navigate; get rid of navigation in completeDay
             this.navigateToProgram(parsedObject);
         } catch (e) {
             console.log("Error in requesting data");
@@ -252,20 +252,12 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
         let path = "removeday?dayname=" + this.state.name;
         this.sendRequestComplete(path);
     };
-    /*
-    handleText = (text) => {
-        return (
-            <View>
-                <Text>text</Text>
-            </View>
-        )
-    };*/
 
     render() {
         return (
             <form>
                 <input
-                    style={{justifyContent: 'center'}}
+                    style={{ backgroundColor: '#116466', textDecorationColor: '#D1E8E2', justifyContent: 'center' }}
                     type="text"
                     placeholder="Name of Day"
                     value={this.state.name}
@@ -277,6 +269,7 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
                     <View>
                         <View style={styles.liftList}>
                             <input
+                                style={{ backgroundColor: '#116466', textDecorationColor: '#D1E8E2' }}
                                 type="text"
                                 placeholder={`Lift #${nameIndex + 1} name`}
                                 value={lift.val0}
@@ -301,7 +294,7 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
                         </View>
                         {lift.val1.map((sr, srIndex) => ( // {lift.val1.map
                             <View style={styles.list}>
-                                <small>(</small>
+                                <small style={styles.small}>(</small>
                                 <TextInput style={styles.input}
                                     placeholder={`# of sets`}
                                     value={sr.sets}
@@ -309,7 +302,7 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
                                     onFocus={this.handleFocus}
                                     onChange={this.handleSetsChange(nameIndex, srIndex)}
                                 />
-                                <small>Sets) X (</small>
+                                <small style={styles.small}>Sets) X (</small>
                                 <TextInput style={styles.input}
                                     placeholder={`# of reps`}
                                     value={sr.reps}
@@ -317,12 +310,12 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
                                     onFocus={this.handleFocus}
                                     onChange={this.handleRepsChange(nameIndex, srIndex)}
                                 />
-                                <small>Reps) @ RPE </small>
+                                <small style={styles.small}>Reps) @ RPE </small>
                                 <select value={sr.rpe} onChange={this.handleRpeChange(nameIndex, srIndex)}>
                                     <option value="">Select RPE ...</option>
                                     {this.createDropDown()}
                                 </select>
-                                <small> @ </small>
+                                <small style={styles.small}> @ </small>
                                 <TextInput style={styles.input}
                                     placeholder={`Percent of 1RM`}
                                     value={sr.percentage}
@@ -331,7 +324,7 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
                                     onFocus={this.handleFocus}
                                     onChange={this.handlePercentChange(lift, nameIndex, srIndex)}
                                 />
-                                <small>% of 1RM </small>
+                                <small style={styles.small}>% of 1RM </small>
                                 <button
                                     type="button"
                                     onClick={this.handleRemoveSetsReps(nameIndex, srIndex)}
@@ -345,17 +338,19 @@ class DayScreen extends Component<DayScreenProps, DayScreenState> {
                 ))}
                 <View style={styles.fixToText}>
                     <Button
+                        color="#116466"
                         title="Add Lift"
                         onPress={this.handleAddLift}
                     />
                 </View>
                 <View style={styles.footer}>
                     <Button
+                        color="#116466"
                         title="Complete this Day"
                         onPress={this.completeDay}
                     />
                     <Button
-                        color="#FF0000"
+                        color="#116466"
                         title="Remove this Day"
                         onPress={this.handleRemoveDay}
                     />
@@ -396,8 +391,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         padding: 10
     },
-    red: {
-        color: 'red',
+    small: {
+        color: "#D1E8E2",
     },
 });
 

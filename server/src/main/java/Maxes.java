@@ -16,12 +16,21 @@ public class Maxes {
         maxesNames = new HashSet<>();
     }
 
+    public Maxes(List<Triplet<String, Integer, Integer>> maxes, Set<String> maxesNames) {
+        this.maxes = maxes;
+        this.maxesNames = maxesNames;
+    }
+
     public List<Triplet<String, Integer, Integer>> getMaxes() {
         return maxes;
     }
 
     public Set<String> getMaxesNames() {
         return maxesNames;
+    }
+
+    public Maxes makeCopy() {
+        return new Maxes(maxes, maxesNames);
     }
 
     public void addMax() {

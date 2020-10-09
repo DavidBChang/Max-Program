@@ -30,6 +30,22 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
         }
     }
 
+    static navigationOptions = ({ navigation, navigationOptions }) => {
+        const { params } = navigation.state;
+        return {
+            title: params ? params.otherParam : 'A Nested Details Screen',
+            headerStyle: {
+                backgroundColor: "#116466",
+
+                alignItems: "center"
+            },
+            headerTintColor: "#FFCB9A",
+            cardStyle: {
+                backgroundColor: "#2C3531",
+            }
+        };
+    };
+
     handleNameChange = evt => {
         this.setState({ name: evt.target.value });
     };
@@ -207,6 +223,7 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
             <form>
                 <h4>Name of the Program: </h4>
                 <input
+                    style={{ backgroundColor: '#116466', textDecorationColor: '#D1E8E2' }}
                     type="text"
                     placeholder="Name of the Program"
                     value={this.state.name}
@@ -217,6 +234,7 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
 
                 <View style={styles.fixToText}>
                     <Button
+                        color="#116466"
                         title="Calculate 1 Rep Max"
                         onPress={() => {
                             navigation.navigate('Calculator')
@@ -227,21 +245,24 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
                 {this.state.maxes.map((lift, index) => (
                     <View style={styles.list}>
                         <TextInput
+                            style={styles.input}
                             placeholder={`Enter Lift`}
                             value={lift.val0}
                             onFocus={this.handleFocus}
                             onChange={this.handleMaxNameChange(index)}
                         />
-                        <Text>Current 1RM: </Text>
-                        <TextInput style={styles.input}
+                        <Text style={styles.text}>Current 1RM: </Text>
+                        <TextInput
+                            style={styles.input}
                             placeholder={`Current 1RM`}
                             value={lift.val1}
                             keyboardType='numeric'
                             onFocus={this.handleFocus}
                             onChange={this.handleMaxRMChange(index)}
                         />
-                        <Text>Increase every cycle by...</Text>
-                        <TextInput style={styles.input}
+                        <Text style={styles.text}>Increase every cycle by...</Text>
+                        <TextInput
+                            style={styles.input}
                             placeholder={`Increase every cycle by...`}
                             value={lift.val2}
                             keyboardType='numeric'
@@ -290,6 +311,7 @@ class ProgramScreen extends Component<ProgramScreenProps, ProgramScreenState> {
                 ))}
                 <View style={styles.footer}>
                     <Button
+                        color="#116466"
                         title="Complete this Program"
                         onPress={this.completeProgram}
                     />
@@ -317,8 +339,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         padding: 10,
     },
+    text: {
+        color: "#D1E8E2"
+    },
     input: {
         width: 100,
+        color: "#D1E8E2"
     },
     footer: {
         flexDirection: 'row',
@@ -329,8 +355,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 12,
     },
-    buttonView: {
-        flexDirection: 'row'
+    button: {
+        backgroundColor: "#2E9CCA"
     },
     textInput: {
         height: 40,

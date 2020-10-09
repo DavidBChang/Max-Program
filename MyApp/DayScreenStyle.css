@@ -2,18 +2,30 @@ form button.add {
     display: inline-block;
     width: auto;
     padding: 0 20px;
-    background-color: #00FF00;
+    background-color: #D9B08C;
+    color: #2C3531;
     font-size: 14px;
+    border-color: #116466;
 }
 
 form button.delete {
     display: inline-block;
     width: auto;
     padding: 0 20px;
-    background-color: #FF0000;
+    background-color: #D9B08C;
+    color: #2C3531;
     font-size: 14px;
+    border-color: #116466;
 }
 
 form button.small:hover {
     background-color: #999;
+}
+
+h1 {
+    color: #FFCB9A;
+}
+
+h4 {
+    color: #FFCB9A;
 }

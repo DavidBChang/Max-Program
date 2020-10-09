@@ -26,31 +26,58 @@ class HomeScreen extends Component<homeProps, homeState> {
         }
     }
 
-    handlePickProgram = (programName) => () => {
-        let path = "program?programname=" + programName;
-        this.sendRequest(programName, path);
+    static navigationOptions = ({ navigation, navigationOptions }) => {
+        const { params } = navigation.state;
+
+        return {
+            title: params ? params.otherParam : 'MAX&PROGRAM',
+            /* These values are used instead of the shared configuration! */
+            headerStyle: {
+                backgroundColor: "#116466",
+            },
+            headerTintColor: "#FFCB9A",
+            cardStyle: {
+                backgroundColor: "#2C3531",
+            }
+        };
     };
 
-    async sendRequest(programName, path) {
+    handlePickProgram = (programName) => () => {
+        let daysPath = "program?programname=" + programName;
+        let maxesPath = "programmaxes?programname=" + programName;
+        this.sendRequest(programName, daysPath, maxesPath);
+    };
+
+    async sendRequest(programName, daysPath, maxesPath) {
         try {
-            let responsePromise = fetch('http://localhost:4567/' + path);
+            let responsePromise = fetch('http://localhost:4567/' + daysPath);
             let response = await responsePromise;
             if (!response.ok) {
                 alert("Error!");
                 return;
             }
             let parsingPromise = response.json();
-            let parsedObject = await parsingPromise;
-            this.navigateToWorkout(programName, parsedObject);
+            let parsedDays = await parsingPromise;
+
+            responsePromise = fetch('http://localhost:4567/' + maxesPath);
+            response = await responsePromise;
+            if (!response.ok) {
+                alert("Error!");
+                return;
+            }
+            parsingPromise = response.json();
+            let parsedMaxes = await parsingPromise;
+            this.navigateToWorkout(programName, parsedDays, parsedMaxes);
         } catch (e) {
             console.log("Error in requesting data");
         }
     }
 
-    navigateToWorkout = (programName, parsedObject) => {
+    navigateToWorkout = (programName, parsedDays, parsedMaxes) => {
         this.props.navigation.navigate('Workout', {
             programName: programName,
-            program: parsedObject,
+            programDays: parsedDays,
+            programMaxes: parsedMaxes
         })
     };
 
@@ -59,14 +86,15 @@ class HomeScreen extends Component<homeProps, homeState> {
         console.log(navigation.getParam('home'));
         console.log(JSON.stringify(this.state.home));
         return (
-            <View style={{ flex: 1, alignItems: 'center' }}>
-                <Text>Home Screen</Text>
+            <View style={{ flex: 1, alignItems: 'center', backgroundColor: "#2C3531" }}>
+                <Text style={{color: "#AAABB8", fontSize: 24, marginBottom: 50, padding: 20}}>Max&Program</Text>
                 <Text>{navigation.getParam('input')}</Text>
                 {(navigation.getParam('input', 'default value') !== 'default value' &&
                  navigation.getParam('input', 'default value') !== [])
                     ? <Text>{JSON.stringify(navigation.getParam('input', 'default value'))}</Text>
                     : null }
                 <Button
+                    color='#116466'
                     title="Create New Program"
                     onPress={() => {
                         this.props.navigation.navigate('Program', {
@@ -96,6 +124,19 @@ const RootStack = createStackNavigator({
     Day: DayScreen,
     Calculator: OneRMCalc,
     Workout: WorkoutScreen,
-});
+},
+    {
+        initialRouteName: 'Home',
+        /* The header config from HomeScreen is now here */
+        navigationOptions: {
+            headerStyle: {
+                backgroundColor: '#25274D',
+            },
+            headerTintColor: 'red',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        },
+    });
 
 export default createAppContainer(RootStack);
